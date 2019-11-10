@@ -207,7 +207,7 @@ void radixSortBase2 (int* arr, const size_t size, int dig = sizeof (int) * 8 - 1
     if (size <= 1 || dig < 0)
         return;
     
-    int counter_l = 0, counter_r = size - 1;
+    size_t counter_l = 0, counter_r = size - 1;
     
     while (counter_l != counter_r)
         {
@@ -233,6 +233,61 @@ void radixSortBase2 (int* arr, const size_t size, int dig = sizeof (int) * 8 - 1
     }
     
 // template T RadixSort () // using key value for each object
+
+
+template <typename T>
+void printArr (const T* arr, const size_t size)
+    {
+    for (size_t i = 0; i < size; i++)
+        std::cout << arr [i] << " ";
+    
+    std::cout << std::endl;
+    }
+
+
+/*
+ * C/C++ style quick sort for numeric arrays
+ *
+ * T* arr - array to sort
+ * size_t size - array length
+ * */
+template <typename T>
+void qsort (T* arr, const size_t size)
+    {
+    if (size <= 1)
+        return;
+    
+    std::cout << "Starting qsort: " << size << std::endl;
+    
+    T base_value = arr [size / 2];
+    size_t idx_left = 0, idx_right = size - 1;
+    
+    while (idx_left < idx_right)
+        {
+        while (arr [idx_left]  <  base_value && idx_right > idx_left)
+            idx_left++;
+        while (arr [idx_right] >  base_value && idx_right > idx_left)
+            idx_right--;
+        
+        std::cout << "l:" << idx_left << " " << arr [idx_left] <<
+                    " r:" << idx_right << " " << arr [idx_right] <<
+                     " BV:" << base_value << std::endl;
+    
+        std::swap (arr [idx_left], arr [idx_right]);
+        
+        printArr (arr, size);
+        
+        std::cout << "\n";
+        }
+        
+    std::cout << "Calling qsort: " << 0 << " " << size / 2 << std::endl;
+    qsort (arr + 0, size / 2);
+    
+    std::cout << "Calling qsort: " << size/2 << " " << size - size / 2 << std::endl;
+    qsort (arr + size / 2, size - size / 2);
+    }
+    
+
 
 /*
  * C/C++ style numeric array orderliness check
@@ -267,7 +322,7 @@ bool sorted_cmp (const T* arr, const size_t size, int (*cmp) (T, T))
     return true;
     }
     
-#define SIZE 10
+#define SIZE 7
 
 typedef int benchType;
 
@@ -281,10 +336,16 @@ int main ()
     auto arr  = new benchType [SIZE];
     
     for (int i = 0; i < SIZE; i++)
-        arr [i] = rand ()%10000;
+        arr [i] = random ()%10;
+    
+    printArr (arr, SIZE);
     
     TIMER (timer_0);
-    merge_sort_ptr_array (arr, buf, SIZE);
+    //merge_sort_ptr_array (arr, buf, SIZE);
+    
+    qsort (arr, SIZE);
+    
+    printArr (arr, SIZE);
     
     /*
     for (int i = SIZE/10; i <= SIZE; i += SIZE/10)
