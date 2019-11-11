@@ -106,7 +106,7 @@ void merge_sort_idx (int* arr, int* buf, size_t start, size_t end)
     for (int i = start; i <= end; i++)
         arr [i] = buf [i];
     }*/
-    
+
 /*
  * C/C++ style merge sort function for numeric arrays
  *
@@ -114,38 +114,44 @@ void merge_sort_idx (int* arr, int* buf, size_t start, size_t end)
  * T* buf - temp. buffer, at least size / 2 length
  * size_t size - array length
  * */
-template <typename T>
-void merge_sort_ptr_array (T* arr, T* buf, const size_t size)
+template<typename T>
+void merge_sort_ptr_array (T *arr, T *buf, const size_t size)
     {
     if (size <= 1)
+        {
         return;
+        }
     
     size_t idx_mid = size / 2;
     size_t iter_left = 0, iter_right = idx_mid, iter = 0;
     
-    merge_sort_ptr_array<T> (arr + 0,       buf, idx_mid - 0);
+    merge_sort_ptr_array<T> (arr + 0, buf, idx_mid - 0);
     merge_sort_ptr_array<T> (arr + idx_mid, buf, size - idx_mid);
     
     // Merge process
     // common part
     while (iter_left < idx_mid && iter_right < size)
         {
-        if (arr [iter_right] < arr [iter_left])
-            buf [iter++] = arr [iter_right++];
+        if (arr[iter_right] < arr[iter_left])
+            {
+            buf[iter++] = arr[iter_right++];
+            }
         else
-            buf [iter++] = arr [iter_left++];
+            {
+            buf[iter++] = arr[iter_left++];
+            }
         }
-        
+    
     // tails
     while (iter_left < idx_mid)
         buf[iter++] = arr[iter_left++];
     while (iter_right < size)
         buf[iter++] = arr[iter_right++];
-        
+    
     // Copies merged subarrays to main array
     std::copy (std::make_move_iterator (buf + 0),
                std::make_move_iterator (buf + size),
-                arr);
+               arr);
     }
 
 /*
@@ -156,28 +162,34 @@ void merge_sort_ptr_array (T* arr, T* buf, const size_t size)
  * int (*cmp) - comparator function
  * size_t size - array length
  * */
-template <typename T>
-void merge_sort_ptr_array_cmp (T* arr, T* buf, int (*cmp)(T, T), const size_t size)
+template<typename T>
+void merge_sort_ptr_array_cmp (T *arr, T *buf, int (*cmp) (T, T), const size_t size)
     {
     assert (arr && buf && cmp); // Bad alloc assertion
     
     if (size <= 1)
+        {
         return;
-
+        }
+    
     size_t idx_mid = size / 2;
     size_t iter_left = 0, iter_right = idx_mid, iter = 0;
     
-    merge_sort_ptr_array_cmp<T> (arr + 0,       buf, cmp, idx_mid - 0);
+    merge_sort_ptr_array_cmp<T> (arr + 0, buf, cmp, idx_mid - 0);
     merge_sort_ptr_array_cmp<T> (arr + idx_mid, buf, cmp, size - idx_mid);
     
     // Merge process
     // common part
     while (iter_left < idx_mid && iter_right < size)
         {
-        if (cmp (arr [iter_right], arr [iter_left]) <= 0)
-            buf [iter++] = arr [iter_right++];
+        if (cmp (arr[iter_right], arr[iter_left]) <= 0)
+            {
+            buf[iter++] = arr[iter_right++];
+            }
         else
-            buf [iter++] = arr [iter_left++];
+            {
+            buf[iter++] = arr[iter_left++];
+            }
         }
     
     // tails
@@ -191,55 +203,59 @@ void merge_sort_ptr_array_cmp (T* arr, T* buf, int (*cmp)(T, T), const size_t si
                std::make_move_iterator (buf + size),
                arr);
     }
-    
-template <typename T>
-void shell_sort (T* arr, const size_t size)
+
+template<typename T>
+void shell_sort (T *arr, const size_t size)
     {
     // dk = dk-1 / 2;  d0 = N/2
-    for (size_t step = size/2; step > 0; step /= 2)
+    for (size_t step = size / 2; step > 0; step /= 2)
         for (size_t i = step; i < size; i++)
-            for (size_t j = i - step; j >= 0 && arr [j] > arr [j + step]; j--)
-                std::swap (arr [j], arr [j + step]);
+            for (size_t j = i - step; j >= 0 && arr[j] > arr[j + step]; j--)
+                std::swap (arr[j], arr[j + step]);
     }
-    
-void radixSortBase2 (int* arr, const size_t size, int dig = sizeof (int) * 8 - 1)
+
+void radixSortBase2 (int *arr, const size_t size, int dig = sizeof (int) * 8 - 1)
     {
     if (size <= 1 || dig < 0)
+        {
         return;
+        }
     
     size_t counter_l = 0, counter_r = size - 1;
     
     while (counter_l != counter_r)
         {
-        while (!((arr [counter_l] >> dig) % 2) && counter_l != counter_r)
+        while (!((arr[counter_l] >> dig) % 2) && counter_l != counter_r)
             counter_l++;
-        while ( ((arr [counter_r] >> dig) % 2) && counter_l != counter_r)
+        while (((arr[counter_r] >> dig) % 2) && counter_l != counter_r)
             counter_r--;
         
-        std::swap (arr [counter_l], arr [counter_r]);
+        std::swap (arr[counter_l], arr[counter_r]);
         }
     
     int high_bit_start = 0;
-    while ((arr [high_bit_start] >> dig) % 2 != 1 && high_bit_start < size)
+    while ((arr[high_bit_start] >> dig) % 2 != 1 && high_bit_start < size)
         high_bit_start++;
     
     if (high_bit_start == 0 || high_bit_start == size)
+        {
         radixSortBase2 (arr, size, dig - 1);
+        }
     else
         {
-        radixSortBase2 (arr + 0,              high_bit_start - 0,    dig - 1);
+        radixSortBase2 (arr + 0, high_bit_start - 0, dig - 1);
         radixSortBase2 (arr + high_bit_start, size - high_bit_start, dig - 1);
         }
     }
-    
+
 // template T RadixSort () // using key value for each object
 
 
-template <typename T>
-void printArr (const T* arr, const size_t size)
+template<typename T>
+void printArr (const T *arr, const size_t size)
     {
     for (size_t i = 0; i < size; i++)
-        std::cout << arr [i] << " ";
+        std::cout << arr[i] << " ";
     
     std::cout << std::endl;
     }
@@ -252,41 +268,42 @@ void printArr (const T* arr, const size_t size)
  * size_t size - array length
  * */
 template <typename T>
-void qsort (T* arr, const size_t size)
+void QuickSort (T* arr, size_t size, unsigned left = 0, unsigned right = -1)
     {
-    if (size <= 1)
-        return;
+    if (right == -1)
+        right = size;
     
-    std::cout << "Starting qsort: " << size << std::endl;
+    unsigned CurL = left;
+    unsigned CurR = right;
+    T CurMid = arr [(left + right) / 2];
     
-    T base_value = arr [size / 2];
-    size_t idx_left = 0, idx_right = size - 1;
-    
-    while (idx_left < idx_right)
+    while (CurL <= CurR)
         {
-        while (arr [idx_left]  <  base_value && idx_right > idx_left)
-            idx_left++;
-        while (arr [idx_right] >  base_value && idx_right > idx_left)
-            idx_right--;
+        while (arr [CurL] < CurMid) CurL++;
+        while (arr [CurR] > CurMid) CurR--;
         
-        std::cout << "l:" << idx_left << " " << arr [idx_left] <<
-                    " r:" << idx_right << " " << arr [idx_right] <<
-                     " BV:" << base_value << std::endl;
-    
-        std::swap (arr [idx_left], arr [idx_right]);
+        if (CurL <= CurR)
+            {
+            if (arr [CurL] > arr [CurR])
+                {
+                T temp_left = arr [CurL];
+                arr [CurL]  = arr [CurR];
+                arr [CurR]  = temp_left;
+                }
+            
+            CurL++;
+            CurR--;
+            }
         
-        printArr (arr, size);
-        
-        std::cout << "\n";
+        if (CurL > CurR) break;
         }
-        
-    std::cout << "Calling qsort: " << 0 << " " << size / 2 << std::endl;
-    qsort (arr + 0, size / 2);
     
-    std::cout << "Calling qsort: " << size/2 << " " << size - size / 2 << std::endl;
-    qsort (arr + size / 2, size - size / 2);
+    if (CurL < right)
+        QuickSort (arr, size, CurL, right);
+    if (left < CurR)
+        QuickSort (arr, size, left, CurR);
+    
     }
-    
 
 
 /*
@@ -295,14 +312,16 @@ void qsort (T* arr, const size_t size)
  * T* arr - array to sort
  * size_t size - array length
  * */
-template <typename T>
-bool sorted (const T* arr, const size_t size)
+template<typename T>
+int sorted (const T *arr, const size_t size)
     {
     for (size_t i = 0; i < size - 1; i++)
-        if (arr [i] > arr [i+1])
-            return false;
-        
-    return true;
+        if (arr[i] > arr[i + 1])
+            {
+            return i;
+            }
+    
+    return -1;
     }
 
 /*
@@ -312,56 +331,55 @@ bool sorted (const T* arr, const size_t size)
  * size_t size - array length
  * int (*cmp)  - comparator function
  * */
-template <typename T>
-bool sorted_cmp (const T* arr, const size_t size, int (*cmp) (T, T))
+template<typename T>
+bool sorted_cmp (const T *arr, const size_t size, int (*cmp) (T, T))
     {
     for (size_t i = 0; i < size - 1; i++)
-        if (cmp (arr [i], arr [i+1]) >= 0)
+        if (cmp (arr[i], arr[i + 1]) >= 0)
+            {
             return false;
-        
+            }
+    
     return true;
     }
-    
-#define SIZE 7
+
+#define SIZE 10000
+//#define PRNT_ARR
 
 typedef int benchType;
 
-int cmp (const int left, const int right)
-    { return left - right; }
+bool cmp (const int left, const int right)
+    { return left < right; }
 
 int main ()
     {
-    auto buf = (benchType*) calloc (SIZE, sizeof (benchType));
-    auto arr2 = new benchType [SIZE];
-    auto arr  = new benchType [SIZE];
+    auto buf = (benchType *) calloc (SIZE, sizeof (benchType));
+    auto arr = new benchType[SIZE];
     
     for (int i = 0; i < SIZE; i++)
-        arr [i] = random ()%10;
+        arr[i] = random () % 10;
     
+    #ifdef PRNT_ARR
     printArr (arr, SIZE);
+    #endif
     
     TIMER (timer_0);
-    //merge_sort_ptr_array (arr, buf, SIZE);
     
-    qsort (arr, SIZE);
-    
-    printArr (arr, SIZE);
-    
-    /*
-    for (int i = SIZE/10; i <= SIZE; i += SIZE/10)
-        {
-        std::copy (std::make_move_iterator (arr2+0),
-                   std::make_move_iterator (arr2+i),
-                   arr);
-        
-        time_t start_2 = clock ();
-        
-        merge_sort_ptr_array (arr, buf, i);
-        }
-    */
+    QuickSort (arr, SIZE);
     
     std::cout << "Time: " << TIME (timer_0) << " us" << std::endl;
-    std::cout << std::endl << (sorted_cmp (arr, SIZE, cmp)? "Sorted." : "Not sorted.") << std::endl;
+    
+    #ifdef PRNT_ARR
+    printArr (arr, SIZE);
+    #endif
+    
+    int isSorted = sorted (arr, SIZE);
+    std::cout << std::endl << isSorted << std::endl;
+    if (isSorted != -1)
+        {
+        for (int i = isSorted - 10; i < isSorted + 10; i++)
+            std::cout << arr[i] << std::endl;
+        }
     
     return 0;
     }
