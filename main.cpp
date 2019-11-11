@@ -303,6 +303,16 @@ void qsort (T* arr, size_t size, size_t left = 0, size_t right = -1)
     
     }
     
+template <typename T>
+size_t lsearch (T* arr, size_t size, T key)
+    {
+    for (size_t i = 0; i < size; i++)
+        if (arr [i] == key)
+            return i;
+    
+    return -1;
+    }
+    
 /*
  * C/C++ style numeric array orderliness check
  *
