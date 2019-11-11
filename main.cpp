@@ -303,14 +303,64 @@ void qsort (T* arr, size_t size, size_t left = 0, size_t right = -1)
     
     }
     
+    
+/*
+ * Linear search algorithm
+ *
+ * T* arr      - prt to array
+ * size_t size - size of the array
+ * T key       - key value to search
+ *
+ * returns element index if key value
+ * was found or -1 if arr does not
+ * contain such key
+ */
 template <typename T>
-size_t lsearch (T* arr, size_t size, T key)
+long int lsearch (T* arr, size_t size, T key)
     {
     for (size_t i = 0; i < size; i++)
         if (arr [i] == key)
             return i;
     
     return -1;
+    }
+/*
+ * Binary search algorithm
+ *
+ * T* arr      - prt to array
+ * size_t size - size of the array
+ * T key       - key value to search
+ *
+ * returns element index if key value
+ * was found or -1 if arr does not
+ * contain such key
+ */
+template <typename T>
+long int bsearch (T* arr,  T key, size_t size, size_t start = 0)
+    {
+    size_t idx_mid = (size + start) / 2;
+    
+    if (size - start > 1)
+        {
+        if (arr[idx_mid] == key)
+            {
+        
+            return idx_mid;
+            }
+        else if (arr[idx_mid] < key)
+            {
+            return bsearch (arr, key, size, idx_mid);
+            }
+        else
+            {
+            return bsearch (arr, key, idx_mid, 0);
+            }
+        }
+    else if (arr [idx_mid] == key)
+        return idx_mid;
+    else
+        return -1;
+        
     }
     
 /*
@@ -350,7 +400,7 @@ size_t sorted_cmp (const T *arr, const size_t size, int (*cmp) (T, T))
     }
     
 // CONFIG
-#define SIZE 100
+#define SIZE 10000
 //#define PRNT_ARR
 
 typedef int benchType;
@@ -364,7 +414,7 @@ int main ()
     auto arr = new benchType[SIZE];
     
     for (int i = 0; i < SIZE; i++)
-        arr[i] = random () % 10;
+        arr[i] = random () % 10001;
     
     #ifdef PRNT_ARR
     printArr (arr, SIZE);
@@ -372,9 +422,11 @@ int main ()
     
     TIMER (timer_0);
     
-    qsort (arr, SIZE);
+    merge_sort_ptr_array (arr, buf, SIZE);
     
     std::cout << "Time: " << TIME (timer_0) << " us" << std::endl;
+    
+    std::cout << bsearch (arr, 600, SIZE) << std::endl;
     
     #ifdef PRNT_ARR
     printArr (arr, SIZE);
