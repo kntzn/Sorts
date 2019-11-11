@@ -7,6 +7,15 @@
 #define TIMER(id) time_t id = clock ()
 #define TIME(id) clock () - id
 
+template<typename T>
+void printArr (const T *arr, const size_t size)
+    {
+    for (size_t i = 0; i < size; i++)
+        std::cout << arr[i] << " ";
+    
+    std::cout << std::endl;
+    }
+
 /*
 void merge_sort (int* arr, int* buf, size_t start, size_t end, int dep = 0)
     {
@@ -153,7 +162,6 @@ void merge_sort_ptr_array (T *arr, T *buf, const size_t size)
                std::make_move_iterator (buf + size),
                arr);
     }
-
 /*
  * C/C++ style merge sort function for any arrays
  *
@@ -247,18 +255,8 @@ void radixSortBase2 (int *arr, const size_t size, int dig = sizeof (int) * 8 - 1
         radixSortBase2 (arr + high_bit_start, size - high_bit_start, dig - 1);
         }
     }
-
 // template T RadixSort () // using key value for each object
 
-
-template<typename T>
-void printArr (const T *arr, const size_t size)
-    {
-    for (size_t i = 0; i < size; i++)
-        std::cout << arr[i] << " ";
-    
-    std::cout << std::endl;
-    }
 
 
 /*
@@ -268,13 +266,13 @@ void printArr (const T *arr, const size_t size)
  * size_t size - array length
  * */
 template <typename T>
-void QuickSort (T* arr, size_t size, unsigned left = 0, unsigned right = -1)
+void qsort (T* arr, size_t size, size_t left = 0, size_t right = -1)
     {
     if (right == -1)
         right = size;
     
-    unsigned CurL = left;
-    unsigned CurR = right;
+    size_t CurL = left;
+    size_t CurR = right;
     T CurMid = arr [(left + right) / 2];
     
     while (CurL <= CurR)
@@ -299,13 +297,12 @@ void QuickSort (T* arr, size_t size, unsigned left = 0, unsigned right = -1)
         }
     
     if (CurL < right)
-        QuickSort (arr, size, CurL, right);
+        qsort (arr, size, CurL, right);
     if (left < CurR)
-        QuickSort (arr, size, left, CurR);
+        qsort (arr, size, left, CurR);
     
     }
-
-
+    
 /*
  * C/C++ style numeric array orderliness check
  *
@@ -313,7 +310,7 @@ void QuickSort (T* arr, size_t size, unsigned left = 0, unsigned right = -1)
  * size_t size - array length
  * */
 template<typename T>
-int sorted (const T *arr, const size_t size)
+size_t sorted (const T *arr, const size_t size)
     {
     for (size_t i = 0; i < size - 1; i++)
         if (arr[i] > arr[i + 1])
@@ -332,24 +329,24 @@ int sorted (const T *arr, const size_t size)
  * int (*cmp)  - comparator function
  * */
 template<typename T>
-bool sorted_cmp (const T *arr, const size_t size, int (*cmp) (T, T))
+size_t sorted_cmp (const T *arr, const size_t size, int (*cmp) (T, T))
     {
     for (size_t i = 0; i < size - 1; i++)
-        if (cmp (arr[i], arr[i + 1]) >= 0)
-            {
-            return false;
-            }
+        if (cmp (arr[i], arr[i + 1]) > 0)
+            return i;
+            
     
-    return true;
+    return -1;
     }
-
-#define SIZE 10000
+    
+// CONFIG
+#define SIZE 100
 //#define PRNT_ARR
 
 typedef int benchType;
 
-bool cmp (const int left, const int right)
-    { return left < right; }
+int cmp (const int left, const int right)
+    { return left - right; }
 
 int main ()
     {
@@ -365,7 +362,7 @@ int main ()
     
     TIMER (timer_0);
     
-    QuickSort (arr, SIZE);
+    qsort (arr, SIZE);
     
     std::cout << "Time: " << TIME (timer_0) << " us" << std::endl;
     
@@ -373,7 +370,10 @@ int main ()
     printArr (arr, SIZE);
     #endif
     
-    int isSorted = sorted (arr, SIZE);
+    
+    
+    // Is sorted
+    int isSorted = sorted_cmp (arr, SIZE, cmp);
     std::cout << std::endl << isSorted << std::endl;
     if (isSorted != -1)
         {
