@@ -314,6 +314,8 @@ void qsort (T* arr, size_t size, size_t left = 0, size_t right = -1)
  * returns element index if key value
  * was found or -1 if arr does not
  * contain such key
+ *
+ * requires array to be sorted
  */
 template <typename T>
 long int lsearch (T* arr, size_t size, T key)
@@ -334,6 +336,8 @@ long int lsearch (T* arr, size_t size, T key)
  * returns element index if key value
  * was found or -1 if arr does not
  * contain such key
+ *
+ * requires array to be sorted
  */
 template <typename T>
 long int bsearch (T* arr,  T key, size_t size, size_t start = 0)
@@ -361,6 +365,34 @@ long int bsearch (T* arr,  T key, size_t size, size_t start = 0)
     else
         return -1;
         
+    }
+
+/*
+* Interpole search algorithm
+*
+* T* arr      - prt to array
+* size_t size - size of the array
+* T key       - key value to search
+*
+* returns element index if key value
+* was found or -1 if arr does not
+* contain such key
+*/
+template <typename T>
+long int isearch (T* arr,  T key, size_t size, size_t start = 0)
+    {
+    size_t idx_approximation =
+            start + static_cast <size_t>
+                (static_cast <double> ((key - arr [start]) * (size-1 - start)) /
+                 static_cast <double>  (arr [size-1] - arr [start]));
+
+    if (arr [idx_approximation] == key)
+        return idx_approximation;
+    else if (arr [idx_approximation] < key)
+        return isearch (arr, key, size, idx_approximation + 1);
+    else
+        return isearch (arr, key, idx_approximation - 1, 0);
+    
     }
     
 /*
@@ -414,7 +446,7 @@ int main ()
     auto arr = new benchType[SIZE];
     
     for (int i = 0; i < SIZE; i++)
-        arr[i] = random () % 10001;
+        arr[i] = random () % 1001;
     
     #ifdef PRNT_ARR
     printArr (arr, SIZE);
@@ -426,7 +458,7 @@ int main ()
     
     std::cout << "Time: " << TIME (timer_0) << " us" << std::endl;
     
-    std::cout << bsearch (arr, 600, SIZE) << std::endl;
+    std::cout << isearch (arr, 600, SIZE) << std::endl;
     
     #ifdef PRNT_ARR
     printArr (arr, SIZE);
