@@ -6,8 +6,8 @@
 #include <thread>
 #include <atomic>
 
-//#define MULTITHREADING
-#define MULTITHREADING_DEPTH 5
+#define MULTITHREADING
+#define MULTITHREADING_DEPTH 3
 
 #define TIMER(id) std::atomic <long> id (clock ())
 #define TIME(id) clock () - id
@@ -488,16 +488,11 @@ int main ()
     printArr (arr, SIZE);
     #endif
     
-    
-    
-    // Is sorted
     int isSorted = sorted_cmp (arr, SIZE, cmp);
-    std::cout << std::endl << isSorted << std::endl;
     if (isSorted != -1)
-        {
-        for (int i = isSorted - 10; i < isSorted + 10; i++)
-            std::cout << arr[i] << std::endl;
-        }
+        std::cout << "Not sorted: " << arr[isSorted] << std::endl;
+    else
+        std::cout << "Sorted" << std::endl;
     
     return 0;
     }
