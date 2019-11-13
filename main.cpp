@@ -3,8 +3,13 @@
 #include <memory>
 #include <bitset>
 #include <cassert>
+#include <thread>
+#include <atomic>
 
-#define TIMER(id) time_t id = clock ()
+//#define MULTITHREADING
+#define MULTITHREADING_DEPTH 5
+
+#define TIMER(id) std::atomic <long> id (clock ())
 #define TIME(id) clock () - id
 
 template<typename T>
@@ -124,7 +129,7 @@ void merge_sort_idx (int* arr, int* buf, size_t start, size_t end)
  * size_t size - array length
  * */
 template<typename T>
-void merge_sort_ptr_array (T *arr, T *buf, const size_t size)
+void merge_sort_ptr_array (T *arr, T *buf, const size_t size, size_t depth = 0)
     {
     if (size <= 1)
         {
@@ -134,13 +139,31 @@ void merge_sort_ptr_array (T *arr, T *buf, const size_t size)
     size_t idx_mid = size / 2;
     size_t iter_left = 0, iter_right = idx_mid, iter = 0;
     
-    merge_sort_ptr_array<T> (arr + 0, buf, idx_mid - 0);
-    merge_sort_ptr_array<T> (arr + idx_mid, buf, size - idx_mid);
+    #ifdef MULTITHREADING
+    if (depth < MULTITHREADING_DEPTH)
+        {
+        std::thread t_left  (merge_sort_ptr_array<T>, arr + 0,       buf + 0,       idx_mid - 0,       depth + 1);
+        std::thread t_right (merge_sort_ptr_array<T>, arr + idx_mid, buf + idx_mid, size    - idx_mid, depth + 1);
     
+        t_left.join ();
+        t_right.join ();
+        }
+    else
+        {
+        merge_sort_ptr_array<T> (arr + 0,       buf, idx_mid - 0,    depth + 1);
+        merge_sort_ptr_array<T> (arr + idx_mid, buf, size - idx_mid, depth + 1);
+        }
+        
+    #else
+        merge_sort_ptr_array<T> (arr + 0, buf, idx_mid - 0);
+        merge_sort_ptr_array<T> (arr + idx_mid, buf, size - idx_mid);
+    #endif
     // Merge process
     // common part
     while (iter_left < idx_mid && iter_right < size)
         {
+        
+        
         if (arr[iter_right] < arr[iter_left])
             {
             buf[iter++] = arr[iter_right++];
@@ -183,8 +206,8 @@ void merge_sort_ptr_array_cmp (T *arr, T *buf, int (*cmp) (T, T), const size_t s
     size_t idx_mid = size / 2;
     size_t iter_left = 0, iter_right = idx_mid, iter = 0;
     
-    merge_sort_ptr_array_cmp<T> (arr + 0, buf, cmp, idx_mid - 0);
-    merge_sort_ptr_array_cmp<T> (arr + idx_mid, buf, cmp, size - idx_mid);
+    std::thread t_left  (merge_sort_ptr_array_cmp<T>, arr + 0,       buf, cmp, idx_mid - 0);
+    std::thread t_right (merge_sort_ptr_array_cmp<T>, arr + idx_mid, buf, cmp, size    - idx_mid);
     
     // Merge process
     // common part
@@ -432,7 +455,7 @@ size_t sorted_cmp (const T *arr, const size_t size, int (*cmp) (T, T))
     }
     
 // CONFIG
-#define SIZE 10000
+#define SIZE 100000000
 //#define PRNT_ARR
 
 typedef int benchType;
@@ -446,19 +469,20 @@ int main ()
     auto arr = new benchType[SIZE];
     
     for (int i = 0; i < SIZE; i++)
-        arr[i] = random () % 1001;
+        arr[i] = random () % 10;
     
     #ifdef PRNT_ARR
     printArr (arr, SIZE);
     #endif
     
-    TIMER (timer_0);
+    //TIMER (timer_0);
+    std::atomic <time_t> timer_0 (clock ());
     
     merge_sort_ptr_array (arr, buf, SIZE);
     
-    std::cout << "Time: " << TIME (timer_0) << " us" << std::endl;
+    std::cout << "Time: " << clock () - timer_0 << " us" << std::endl;
     
-    std::cout << isearch (arr, 600, SIZE) << std::endl;
+    //std::cout << isearch (arr, 600, SIZE) << std::endl;
     
     #ifdef PRNT_ARR
     printArr (arr, SIZE);

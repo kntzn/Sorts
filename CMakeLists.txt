@@ -4,3 +4,5 @@ project(Sorts)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(Sorts main.cpp)
+
+SET(CMAKE_CXX_FLAGS -pthread)
